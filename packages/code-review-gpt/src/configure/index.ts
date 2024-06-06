@@ -17,6 +17,9 @@ export const configure = async (yargs: ReviewArgs): Promise<void> => {
   if (yargs.setupTarget === PlatformOptions.AZDEV) {
     await configureAzureDevOps();
   }
+  if (yargs.setupTarget === PlatformOptions.BITBUCKET) {
+    await configureBitbucket();
+  }
 };
 
 const captureApiKey = async (): Promise<string | undefined> => {
@@ -125,4 +128,45 @@ const configureAzureDevOps = async () => {
   logger.info(
     "Please manually add the OPENAI_API_KEY and API_TOKEN secrets as encrypted variables in the UI."
   );
+};
+
+// FIXME
+const configureBitbucket = async () => {
+  const githubWorkflowTemplate = await findTemplateFile(
+    "**/templates/github-pr.yml"
+  );
+
+  const workflowsDir = path.join(process.cwd(), ".github", "workflows");
+  fs.mkdirSync(workflowsDir, { recursive: true });
+
+  const workflowFile = path.join(workflowsDir, "code-review-gpt.yml");
+  fs.writeFileSync(
+    workflowFile,
+    fs.readFileSync(githubWorkflowTemplate, "utf8"),
+    "utf8"
+  );
+
+  logger.info(`Created GitHub Actions workflow at: ${workflowFile}`);
+
+  const apiKey = await captureApiKey();
+
+  if (!apiKey) {
+    logger.error(
+      "No API key provided. Please manually add the OPENAI_API_KEY secret to your GitHub repository."
+    );
+
+    return;
+  }
+
+  try {
+    execSync(`gh auth status || gh auth login`, { stdio: "inherit" });
+    execSync(`gh secret set OPENAI_API_KEY --body=${String(apiKey)}`);
+    logger.info(
+      "Successfully added the OPENAI_API_KEY secret to your GitHub repository."
+    );
+  } catch (error) {
+    logger.error(
+      "It seems that the GitHub CLI is not installed or there was an error during authentication. Don't forget to add the OPENAI_API_KEY to the repo settings/Environment/Actions/Repository Secrets manually."
+    );
+  }
 };

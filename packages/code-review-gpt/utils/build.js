@@ -31,5 +31,9 @@ build(sharedConfig).then(() => {
   fs.copyFileSync(
     path.join(__dirname, "../templates", "azdev-pr.yml"),
     path.join(__dirname, "../dist", "azdev-pr.yml")
-  );  
+  );
+  fs.copyFileSync(
+    path.join(__dirname, "../templates", "bitbucket-pr.yml"),
+    path.join(__dirname, "../dist", "bitbucket-pr.yml")
+  );
 });

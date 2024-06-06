@@ -78,11 +78,17 @@ export const review = async (
     if (shouldCommentPerFile) {
       await commentPerFileGithub(feedbacks, signOff);
     }
-  } else if (isCi === PlatformOptions.GITLAB) {
+  }
+  
+  if (isCi === PlatformOptions.GITLAB) {
     await commentOnPRGitlab(response, signOff);
-  } else if (isCi === PlatformOptions.AZDEV) {
+  }
+  
+  if (isCi === PlatformOptions.AZDEV) {
     await commentOnPRAzdev(response, signOff);
-  } else if (isCi === PlatformOptions.BITBUCKET){
+  }
+  
+  if (isCi === PlatformOptions.BITBUCKET){
     if (!shouldCommentPerFile) {
       await commentOnPRBitbucket(response, signOff);
     }
