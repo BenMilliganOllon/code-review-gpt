@@ -97,7 +97,7 @@ export const getYargs = async (): Promise<ReviewArgs> => {
 
   if (argv.isCi === PlatformOptions.GITLAB && argv.shouldCommentPerFile) {
     logger.warn(
-      "The 'commentPerFile' flag only works for GitHub, not for GitLab and AzureDevOps."
+      "The 'commentPerFile' flag only works for GitHub & Bitbucket, not for GitLab & AzureDevOps."
     );
   }
 

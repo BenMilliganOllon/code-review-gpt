@@ -81,3 +81,21 @@ export const gitAzdevEnvVariables = (): Record<string, string> => {
     azdevToken: process.env.API_TOKEN ?? "",
   };
 };
+
+// FIXME
+export const gitBitbucketEnvVariables = (): Record<string, string> => {
+  const envVars = ["GITHUB_SHA", "BASE_SHA", "GITHUB_TOKEN"];
+  const missingVars: string[] = [];
+  envVars.forEach((envVar) => process.env[envVar] ?? missingVars.push(envVar));
+
+  if (missingVars.length > 0) {
+    logger.error(`Missing environment variables: ${missingVars.join(", ")}`);
+    throw new Error("One or more GitHub environment variables are not set");
+  }
+
+  return {
+    githubSha: process.env.GITHUB_SHA ?? "",
+    baseSha: process.env.BASE_SHA ?? "",
+    githubToken: process.env.GITHUB_TOKEN ?? "",
+  };
+}

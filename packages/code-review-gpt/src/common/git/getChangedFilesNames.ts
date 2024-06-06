@@ -1,7 +1,12 @@
 import { exec } from "child_process";
 import { join } from "path";
 
-import { getGitHubEnvVariables, getGitLabEnvVariables, gitAzdevEnvVariables } from "../../config";
+import {
+  getGitHubEnvVariables,
+  getGitLabEnvVariables,
+  gitAzdevEnvVariables,
+  gitBitbucketEnvVariables,
+} from "../../config";
 import { PlatformOptions } from "../types";
 
 export const getChangedFilesNamesCommand = (
@@ -19,6 +24,10 @@ export const getChangedFilesNamesCommand = (
     const { azdevSha, baseSha } = gitAzdevEnvVariables();
     
     return `git diff --name-only --diff-filter=AMRT ${baseSha} ${azdevSha}`;
+  } else if (isCi === PlatformOptions.BITBUCKET){
+    const { bitbucketSha, baseSha } = gitBitbucketEnvVariables();
+
+    return `git diff --name-only --diff-filter=AMRT ${baseSha} ${bitbucketSha}`;
   }
 
   return "git diff --name-only --diff-filter=AMRT --cached";

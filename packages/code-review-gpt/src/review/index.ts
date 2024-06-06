@@ -1,6 +1,8 @@
 /* eslint-disable complexity */
 import { commentOnPR as commentOnPRGithub } from "../common/ci/github/commentOnPR";
-import { commentPerFile } from "../common/ci/github/commentPerFile";
+import { commentPerFile as commentPerFileGithub } from "../common/ci/github/commentPerFile";
+import { commentOnPR as commentOnPRBitbucket } from "../common/ci/bitbucket/commentOnPR";
+import { commentPerFile as commentPerFileBitbucket } from "../common/ci/bitbucket/commentPerFile";
 import { commentOnPR as commentOnPRGitlab } from "../common/ci/gitlab/commentOnPR";
 import { commentOnPR as commentOnPRAzdev } from "../common/ci/azdev/commentOnPR";
 import { getMaxPromptLength } from "../common/model/getMaxPromptLength";
@@ -74,15 +76,19 @@ export const review = async (
       await commentOnPRGithub(response, signOff);
     }
     if (shouldCommentPerFile) {
-      await commentPerFile(feedbacks, signOff);
+      await commentPerFileGithub(feedbacks, signOff);
     }
-  }
-  if (isCi === PlatformOptions.GITLAB) {
+  } else if (isCi === PlatformOptions.GITLAB) {
     await commentOnPRGitlab(response, signOff);
-  }
-
-  if (isCi === PlatformOptions.AZDEV) {
+  } else if (isCi === PlatformOptions.AZDEV) {
     await commentOnPRAzdev(response, signOff);
+  } else if (isCi === PlatformOptions.BITBUCKET){
+    if (!shouldCommentPerFile) {
+      await commentOnPRBitbucket(response, signOff);
+    }
+    if (shouldCommentPerFile) {
+      await commentPerFileBitbucket(feedbacks, signOff);
+    }
   }
 
   return response;

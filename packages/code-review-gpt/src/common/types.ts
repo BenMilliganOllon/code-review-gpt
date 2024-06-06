@@ -33,6 +33,7 @@ export enum PlatformOptions {
   GITHUB = "github",
   GITLAB = "gitlab",
   AZDEV = "azdev",
+  BITBUCKET = "bitbucket",
 }
 
 export type ReviewArgs = {
